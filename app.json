@@ -1,0 +1,19 @@
+{
+  "pages":[
+   
+   "pages/index/index",
+    "pages/videoinfo/videoinfo",
+    "pages/userLogin/login",
+    "pages/userRegist/regist",
+    "pages/mine/mine",
+    "pages/chooseBgm/chooseBgm",
+    "pages/searchVideo/searchVideo"
+    
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "佐仓小视频",
+    "navigationBarTextStyle": "black"
+  }
+}
