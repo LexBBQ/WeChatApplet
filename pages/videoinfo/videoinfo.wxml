@@ -27,6 +27,7 @@ objectFit='{{cover}}'
 
 <cover-image class="face" src='{{serverUrl}}{{publishUser.faceImage}}' bindtap='showPublisher'></cover-image>
             <!-- 喜欢收藏按钮 -->
+       <!-- 会有一个点赞的判断，如果值为true则说明已经点赞则显示like.png，表明已经点赞，反之为unlike.png，表明没有点赞 -->
             <block wx:if="{{userLikeVideo}}">
                 <cover-image class="size-me" src='../resource/images/like.png' style='margin-top:30rpx;' bindtap='likeVideoOrNot'></cover-image>
             </block>

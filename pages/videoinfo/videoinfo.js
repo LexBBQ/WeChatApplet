@@ -7,13 +7,20 @@ Page({
     cover: "cover",
     videoId: "",
     src: "",
+    //定义视频信息
     video:null,
+    //用户是否对该视频点赞
     userLikeVideo:false,
+    //视频发布者信息
     publishUser:null,
     serverUrl:app.serverUrl,
+    //默认评论页数
     commentsPage:1,
+    //默认没页展示的条数
     commentsSize:1,
+    //总页数
     totalPage:1,
+    //评论列表集合
     commentsList:[],
     placeholder:"说点什么...",
     toUserId:""
@@ -21,12 +28,16 @@ Page({
   onLoad:function(param){
     var me=this;
     var serverUrl = app.serverUrl;
+    //获取当前登陆者信息
     var user=app.getGlobalUserInfo("userInfo");
+    //将从index页面传过来的string类型的video对象转换成json对象
     var video = JSON.parse(param.video);
+    //获得该视频的路径
     var src = video.videoPath;
+    //获取当前评论的页数
     var page = me.data.commentsPage;
    
-    
+    //调用查询视频发布者信息接口（需要身份认证）
     wx.request({
       url: serverUrl + '/user/findPublish?id=' + user.id + '&videoId=' + video.id + '&publishId=' + video.userId,
       method:'POST',
@@ -37,8 +48,11 @@ Page({
       },
       success:function(res){
         console.log(res.data)
+     //定义一个用来回跳的路径，若用户没用登录在登录之后可以直接跳转到原理的路径
+    //因为在参数在传递的时候如果作为参数的值在添加参数的话不会被识别，所以这里使用#代替？使用@代替=，在登录页面在进行转义即可
         var realUrl = "../videoinfo/videoinfo#video@" + JSON.stringify(video) ;
         if (res.data.status==502){
+          //如果用户没登录，会重定向到登录界面，并将realUrl传递过去
           wx.showToast({
             title: res.data.msg,
             icon:"none",
@@ -50,7 +64,9 @@ Page({
           })
         }
         me.setData({
+          //将后端获取到的值赋过来
           userLikeVideo: res.data.data.isLike,
+          //将查询到的发布者信息赋值给users
           publishUser:res.data.data.users
         })
       }
@@ -59,33 +75,27 @@ Page({
  
     
     me.setData({
+      //将视频路径进行赋值
       src:serverUrl+src,
       video:video
     })
-    // var id= param.id;
-    // var serverUrl=app.serverUrl;
-    // wx.request({
-    //   url: serverUrl +'/video/findVideo?id='+id,
-    //   method:'POST',
-    //   success:function(res){
-    //     var src = res.data.data.videoPath;
-    //     me.setData({
-    //       src:src
-    //     })
-    //   }
-    // })
+
+    //调用查询评论的函数
     me.getCommentsList(page);
   },
+  //跳转到搜索页面
   showSearch:function(){
     wx.navigateTo({
       url: '../searchVideo/searchVideo',
     })
   },
+  //返回首页
   showIndex:function(){
     wx.redirectTo({
       url: '../index/index',
     })
   },
+  //查看登录者的个人信息
   showMine:function(){
     var user = app.getGlobalUserInfo("userInfo");
     if(user==null||user==undefined||user==""){
@@ -98,6 +108,7 @@ Page({
       })
     }
   },
+  //视频上传
   upload:function(){
     var me = this;
     var video = JSON.stringify(me.data.video);
@@ -135,9 +146,11 @@ Page({
       })
   }
   },
+  //用户点赞和取消点赞的函数
   likeVideoOrNot:function(){
     var me =this;
     var user = app.getGlobalUserInfo("userInfo");
+    //判断用于是否登录，如果没登录重定向到登录页面
     if (user == null || user == undefined || user == "") {
       wx.navigateTo({
         url: '../userLogin/login',
@@ -181,6 +194,7 @@ Page({
       })
     }
   },
+  //查看视频发布者信息
   showPublisher:function(){
     var me=this;
     var video = me.data.video;
@@ -196,11 +210,14 @@ Page({
       })
     }
   },
+  //分享按钮
   shareMe:function(){
     wx.showActionSheet({
+      //这里只是做了展示，相关功能实现只需要调用对应的官方的api即可，这里就不足具体实现了
       itemList: ['下载视频','举报用户','分享'],
     })
   },
+  //留言函数
   leaveComment:function(){
     var me =this;
     this.setData({
@@ -266,10 +283,12 @@ Page({
   getCommentsList:function(page){
       var me =this;
       var serverUrl=app.serverUrl;
+      //获取到当前的视频对象
       var video=me.data.video;
       wx.showLoading({
         title: '加载中',
       })
+      //调用查询视频留言的接口
       wx.request({
         url: serverUrl + '/video/findComments?videoId=' + video.id+'&page='+page,
         method:"POST",
